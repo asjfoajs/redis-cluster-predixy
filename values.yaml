@@ -1,0 +1,12 @@
+global:
+  redis:
+    password: ""
+  predixy:
+    clusterServerPool:
+      password: ""
+  storageClass: ""
+
+predixy:
+  fullnameOverride: ""
+redis-cluster:
+  fullnameOverride: ""

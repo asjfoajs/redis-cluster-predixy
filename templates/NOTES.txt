@@ -1,0 +1,5 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+Contains two sub-releases {{ .Values.predixy.fullnameOverride }} and {{ index .Values "redis-cluster" "fullnameOverride" }}

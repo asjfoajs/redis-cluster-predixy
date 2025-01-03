@@ -1,0 +1,210 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "common.names.fullname" . }}.conf
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  predixy.conf: >
+
+    ################################### GENERAL
+    ####################################
+
+    ## Predixy configuration file example
+
+    ## Specify a name for this predixy service
+
+    ## redis command INFO can get this
+
+    Name Predixy-DefaultNS
+
+    ## Specify listen address, support IPV4, IPV6, Unix socket
+
+    ## Examples:
+
+    # Bind 127.0.0.1:7617
+
+    # Bind 0.0.0.0:7617
+
+    # Bind /tmp/predixy
+
+    ## Default is 0.0.0.0:7617
+
+    Bind 0.0.0.0:7617
+
+    ## Worker threads
+
+    WorkerThreads 4
+
+    ## Memory limit, 0 means unlimited
+
+    ## Examples:
+
+    # MaxMemory 100M
+
+    # MaxMemory 1G
+
+    # MaxMemory 0
+
+    ## MaxMemory can change online by CONFIG SET MaxMemory xxx
+
+    ## Default is 0
+
+    # MaxMemory 0
+
+    ## Close the connection after a client is idle for N seconds (0 to disable)
+
+    ## ClientTimeout can change online by CONFIG SET ClientTimeout N
+
+    ## Default is 0 为0时表示禁止该功能，不主动断开客户端连接
+
+    ClientTimeout 0
+
+    ## IO buffer size
+
+    ## Default is 4096
+
+    # BufSize 4096
+
+    ################################### LOG
+    ########################################
+
+    ## Log file path
+
+    ## Unspecify will log to stdout
+
+    ## Default is Unspecified
+
+    # Log /data/predixy.log
+
+
+    ## LogRotate support
+
+
+    ## 1d rotate log every day
+
+    ## nh rotate log every n hours   1 <= n <= 24
+
+    ## nm rotate log every n minutes 1 <= n <= 1440
+
+    ## nG rotate log evenry nG bytes
+
+    ## nM rotate log evenry nM bytes
+
+    ## time rotate and size rotate can combine eg 1h 2G, means 1h or 2G roate a
+    time
+
+    ## Examples:
+
+    # LogRotate 1d 2G
+
+    # LogRotate 1d
+
+    LogRotate 1d
+
+
+    ## Default is disable LogRotate
+
+
+
+    ## In multi-threads, worker thread log need lock,
+
+    ## AllowMissLog can reduce lock time for improve performance
+
+    ## AllowMissLog can change online by CONFIG SET AllowMissLog true|false
+
+    ## Default is true
+
+    # AllowMissLog false
+
+
+    ## LogLevelSample, output a log every N
+
+    ## all level sample can change online by CONFIG SET LogXXXSample N
+
+    LogVerbSample 0
+
+    LogDebugSample 0
+
+    LogInfoSample 100
+
+    LogNoticeSample 1
+
+    LogWarnSample 1
+
+    LogErrorSample 1
+
+
+
+    ################################### AUTHORITY
+    ##################################
+
+    # Include auth.conf
+
+    Authority {
+     {{- $value := .Values.global.redis.password}}
+     {{- range .Values.global.redis.mode}}
+      Auth "{{ $value }}" {
+          Mode {{ . }}
+      }
+      {{- end}}
+    }
+
+    ################################### SERVERS
+    ####################################
+
+    #Include cluster.conf
+
+    # Include sentinel.conf
+
+    # Include try.conf
+
+    ###############################################################################
+
+    #这个clusterserverpool也可以放到cluster.conf文件中，看自已的需求
+
+    ClusterServerPool {
+      Password {{ .Values.global.predixy.clusterServerPool.password}}
+      MasterReadPriority 60
+      StaticSlaveReadPriority 50
+      DynamicSlaveReadPriority 60
+      RefreshInterval 1
+      ServerTimeout 1
+      ServerFailureLimit 10
+      ServerRetryTimeout 1
+      KeepAlive 120
+      Servers {
+        {{- $count := int .Values.global.predixy.clusterServerPool.nodes }}
+        {{- $namespace := .Release.Namespace }}
+        {{- range until $count }}
+        + redis-cluster-{{ . }}.redis-cluster-headless.{{ $namespace }}.svc.cluster.local:6379
+        {{- end }}
+      }
+    }
+
+    ################################### DATACENTER
+    #################################
+
+    ## LocalDC specify current machine dc
+
+    # LocalDC bj
+
+
+    ## see dc.conf
+
+    # Include dc.conf
+
+
+
+    ################################### COMMAND
+    ####################################
+
+    ## Custom command define, see command.conf
+
+    #Include command.conf
+
+    ################################### LATENCY
+    ####################################
+
+    ## Latency monitor define, see latency.conf
+
+    #Include latency.conf
