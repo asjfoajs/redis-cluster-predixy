@@ -60,3 +60,12 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of the cluster to use
+*/}}
+{{- define "predixy.clusterFullname" -}}
+{{- if .Values.clusterFullNameOverride}}
+{{- .Values.clusterFullNameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}

@@ -6,7 +6,8 @@ global:
       password: ""
   storageClass: ""
 
-predixy:
-  fullnameOverride: ""
 redis-cluster:
   fullnameOverride: ""
+predixy:
+  fullnameOverride: ""
+  clusterFullNameOverride: ""#与redis-cluster.fullnameOverride一致

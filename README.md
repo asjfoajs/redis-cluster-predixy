@@ -45,12 +45,15 @@ global:
     password: ""
   predixy:
     clusterServerPool:
-      password: "" 
+      password: ""
   storageClass: ""
-predixy:
-  fullnameOverride: ""
+
 redis-cluster:
   fullnameOverride: ""
+predixy:
+  fullnameOverride: ""
+  clusterFullNameOverride: ""#Consistent with redis-cluster.fullnameOverride
+
 ```
 
 2. **Install the Chart**

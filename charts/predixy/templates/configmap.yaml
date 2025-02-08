@@ -173,10 +173,11 @@ data:
       ServerRetryTimeout 1
       KeepAlive 120
       Servers {
+        {{- $clusterFullName := include "predixy.clusterFullname" . -}}
         {{- $count := int .Values.global.predixy.clusterServerPool.nodes }}
         {{- $namespace := .Release.Namespace }}
         {{- range until $count }}
-        + redis-cluster-{{ . }}.redis-cluster-headless.{{ $namespace }}.svc.cluster.local:6379
+        + {{ $clusterFullName }}-{{ . }}.{{ $clusterFullName }}-headless.{{ $namespace }}.svc.cluster.local:6379
         {{- end }}
       }
     }

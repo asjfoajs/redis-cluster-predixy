@@ -40,10 +40,12 @@ global:
       password: "" #这个是predixy的密码
   storageClass: ""
 #一起部署需要覆盖一下fullnameOverride，否则两个子chart的模板都会用release-name去生成container-name等
-predixy:
-  fullnameOverride: ""
 redis-cluster:
   fullnameOverride: ""
+predixy:
+  fullnameOverride: ""
+  clusterFullNameOverride: ""#与redis-cluster.fullnameOverride一致
+
 ```
 
 2.安装chart
